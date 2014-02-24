@@ -36,7 +36,6 @@
       'expose'               : false,     // Whether to expose the elements at each step in the tour (requires modal:true)
       'directTip'            : false,     // can choose to directly open a tip
       'directTipMode'        : false,     // only show tooltips when in direct Tip mode
-      'directTipLinks'       : [],        // array of all links to a tip
       'postExposeCallback'   : $.noop,    // A method to call after an element has been exposed
       'preRideCallback'      : $.noop,    // A method to call before the tour starts (passed index, tip, and cloned exposed element)
       'postRideCallback'     : $.noop,    // A method to call once the tour closes (canceled or complete)
@@ -101,9 +100,9 @@
                 methods.create({$li : $(this), index : index});
               });
 
-            	if (settings.directTip) {
-            		methods.prepareDirectTip();
-            	}
+              if (settings.directTip) {
+                methods.prepareDirectTip();
+              }
 
               // show first tip
               if(settings.autoStart) {
@@ -202,7 +201,7 @@
           methods.timer_instance(opts.index);
 
         if (opts.button_direct)
-        	content += methods.button_direct(opts.button_direct);
+          content += methods.button_direct(opts.button_direct);
 
         $wrapper = $(settings.template.wrapper);
         if (opts.li.attr('data-aria-labelledby')) {
@@ -252,7 +251,7 @@
       create : function (opts) {
         // backwards compatibility with data-text attribute
         var buttonText = opts.$li.attr('data-button') || opts.$li.attr('data-text'),
-        	directTipText = opts.$li.attr('data-directTip') || false,
+          directTipText = opts.$li.attr('data-directTip') || false,
           tipClass = opts.$li.attr('class'),
           $tip_content = $(methods.tip_template({
             tip_class : tipClass,
@@ -325,36 +324,26 @@
               $timer.outerWidth(0);
 
               if (settings.timer > 0) {
-
                 settings.$next_tip.show();
                 $timer.animate({
                   width: $('.joyride-timer-indicator-wrap', settings.$next_tip).outerWidth()
                 }, settings.timer);
-
               } else {
-
                 settings.$next_tip.show();
-
               }
-
-
             } else if (/fade/i.test(settings.tipAnimation)) {
 
               $timer.outerWidth(0);
 
               if (settings.timer > 0) {
-
                 settings.$next_tip.fadeIn(settings.tipAnimationFadeSpeed);
 
                 settings.$next_tip.show();
                 $timer.animate({
                   width: $('.joyride-timer-indicator-wrap', settings.$next_tip).outerWidth()
                 }, settings.timer);
-
               } else {
-
                 settings.$next_tip.fadeIn(settings.tipAnimationFadeSpeed);
-
               }
             }
 
@@ -362,7 +351,7 @@
             // Focus next button for keyboard users.
             $('.joyride-next-tip', settings.$current_tip).focus();
             methods.tabbable(settings.$current_tip);
-          // skip non-existent targets
+          	// skip non-existent targets
           } else if (settings.$li && settings.$target.length < 1) {
             methods.show();
           } else {
@@ -374,34 +363,23 @@
       },
 
       prepareDirectTip : function () {
-      	settings.$content_el.find('li').each(function (i, el) {
-      		var link,
-      				selector = $(el).data('id') ? '#' + $(el).data('id') : false;
-      		if (!selector) selector = $(el).data('class') ? '.' + $(el).data('class') : false;
+        settings.$content_el.find('li').each(function (i, el) {
+          var link,
+              selector = $(el).data('id') ? '#' + $(el).data('id') : false;
+          if (!selector) selector = $(el).data('class') ? '.' + $(el).data('class') : false;
 
-      		if (selector){
-    				link = $(selector);
-    				settings.directTipLinks.push(link);
-    				link.hover(
-						  function() {
-						  	if(settings.directTipMode) {
-						  		methods.hide(); // hide old tips
-							  	settings.$li = settings.$li.siblings(':nth-child(' + i + ')'); // set to current tip
-				          methods.set_next_tip();
-
-							    // if(settings.modal && settings.expose){
-			        //       methods.expose();
-			        //       console.log('expose');
-			        //     }
-			            methods.show();
-		            }
-						  }, function() {
-						  	// console.log('hoverout');
-						   //  methods.hide();
-						  }
-						);
-      		}
-      	});
+          if (selector){
+            link = $(selector);
+            link.on('mouseenter', function() {
+              if(settings.directTipMode) {
+                methods.hide(); // hide old tips
+                settings.$li = settings.$li.siblings(':nth-child(' + i + ')'); // set to current tip
+                methods.set_next_tip();
+                methods.show();
+              }
+          });
+          }
+        });
       },
 
       // detect phones with media queries if supported.
@@ -454,15 +432,15 @@
       set_target : function () {
         var cl = settings.$li.attr('data-class'),
             id = settings.$li.attr('data-id'),
-		        $sel = function () {
-		          if (id) {
-		            return $(settings.document.getElementById(id));
-		          } else if (cl) {
-		            return $('.' + cl).filter(":visible").first();
-		          } else {
-		            return $('body');
-		          }
-		        };
+            $sel = function () {
+              if (id) {
+                return $(settings.document.getElementById(id));
+              } else if (cl) {
+                return $('.' + cl).filter(":visible").first();
+              } else {
+                return $('body');
+              }
+            };
 
         settings.$target = $sel();
       },
@@ -488,7 +466,7 @@
 
       destroy : function () {
         if(!$.isEmptyObject(settings)){
-       	  settings.$document.off('.joyride');
+           settings.$document.off('.joyride');
         }
 
         $(window).off('.joyride');
@@ -508,14 +486,14 @@
           }
           settings.autoStart = true;
         } else {
-	        methods.hide();
-	        settings.$li = undefined;
-	        if (!$('.joyride-tip-guide').length) {
-	          settings.$tip_content.each(function (index) {
-	            methods.create({$li : $(this), index : index});
-	          });
-	        }
-        	methods.show('init');
+          methods.hide();
+          settings.$li = undefined;
+          if (!$('.joyride-tip-guide').length) {
+            settings.$tip_content.each(function (index) {
+              methods.create({$li : $(this), index : index});
+            });
+          }
+          methods.show('init');
         }
       },
 
