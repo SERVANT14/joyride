@@ -35,6 +35,7 @@
       'modal'                : false,     // Whether to cover page with modal during the tour
       'expose'               : false,     // Whether to expose the elements at each step in the tour (requires modal:true)
       'directTip'            : false,     // can choose to directly open a tip
+      'directTipMode'        : false,     // only show tooltips when in direct Tip mode
       'directTipLinks'       : [],        // array of all links to a tip
       'postExposeCallback'   : $.noop,    // A method to call after an element has been exposed
       'preRideCallback'      : $.noop,    // A method to call before the tour starts (passed index, tip, and cloned exposed element)
@@ -135,11 +136,13 @@
 
             settings.$document.on('click.joyride', '.joyride-direct-tip', function (e) {
               e.preventDefault();
+              settings.directTipMode = true;
               methods.hide();
             });
 
             settings.$document.on('click.joyride', '.joyride-close-tip', function (e) {
               e.preventDefault();
+              settings.directTipMode = false;
               methods.end();
             });
 
@@ -381,14 +384,17 @@
     				settings.directTipLinks.push(link);
     				link.hover(
 						  function() {
-						  	settings.$li = settings.$li.siblings(':nth-child(' + i + ')');
-			          methods.set_next_tip();
-						    // methods.show();
-						    if(settings.modal && settings.expose){
-		              methods.expose();
-		              console.log('expose');
+						  	if(settings.directTipMode) {
+						  		methods.hide(); // hide old tips
+							  	settings.$li = settings.$li.siblings(':nth-child(' + i + ')'); // set to current tip
+				          methods.set_next_tip();
+
+							    // if(settings.modal && settings.expose){
+			        //       methods.expose();
+			        //       console.log('expose');
+			        //     }
+			            methods.show();
 		            }
-		            methods.show();
 						  }, function() {
 						  	// console.log('hoverout');
 						   //  methods.hide();
