@@ -35,6 +35,8 @@
       'modal'                : false,     // Whether to cover page with modal during the tour
       'expose'               : false,     // Whether to expose the elements at each step in the tour (requires modal:true)
       'directTip'            : false,     // can choose to directly open a tip
+      'directTipTargets'     : [],     // can choose to directly open a tip
+      'incrementingId'       : 0,
       'directTipMode'        : false,     // only show tooltips when in direct Tip mode
       'postExposeCallback'   : $.noop,    // A method to call after an element has been exposed
       'preRideCallback'      : $.noop,    // A method to call before the tour starts (passed index, tip, and cloned exposed element)
@@ -100,10 +102,6 @@
                 methods.create({$li : $(this), index : index});
               });
 
-              if (settings.directTip) {
-                methods.prepareDirectTip();
-              }
-
               // show first tip
               if (settings.autoStart)  {
                 if (!settings.startTimerOnClick && settings.timer > 0) {
@@ -113,7 +111,10 @@
                   methods.show('init');
                 }
               }
+            }
 
+            if (settings.directTip) {
+              methods.prepareDirectTip();
             }
 
             settings.$document.on('click.joyride', '.joyride-next-tip, .joyride-modal-bg', function (e) {
@@ -147,19 +148,19 @@
 
             settings.$window.bind('resize.joyride', function (e) {
               if (settings.$li) {
-	              if (settings.exposed && settings.exposed.length>0) {
-	                var $els = $(settings.exposed);
-	                $els.each(function(){
-	                  var $this = $(this);
-	                  methods.un_expose($this);
-	                  methods.expose($this);
-	                });
-	              }
-	              if (methods.is_phone()) {
-	                methods.pos_phone();
-	              } else {
-	                methods.pos_default();
-	              }
+                if (settings.exposed && settings.exposed.length>0) {
+                  var $els = $(settings.exposed);
+                  $els.each(function(){
+                    var $this = $(this);
+                    methods.un_expose($this);
+                    methods.expose($this);
+                  });
+                }
+                if (methods.is_phone()) {
+                  methods.pos_phone();
+                } else {
+                  methods.pos_default();
+                }
               }
             });
           } else {
@@ -352,7 +353,7 @@
             // Focus next button for keyboard users.
             $('.joyride-next-tip', settings.$current_tip).focus();
             methods.tabbable(settings.$current_tip);
-          	// skip non-existent targets
+            // skip non-existent targets
           } else if (settings.$li && settings.$target.length < 1) {
             methods.show();
           } else {
@@ -364,23 +365,32 @@
       },
 
       prepareDirectTip : function () {
-        settings.$content_el.find('li').each(function (i, el) {
-          var link,
-              selector = $(el).data('id') ? '#' + $(el).data('id') : false;
-          if (!selector) selector = $(el).data('class') ? '.' + $(el).data('class') : false;
-
-          if (selector){
-            link = $(selector);
-            link.on('mouseenter', function() {
-              if (settings.directTipMode)  {
-                methods.hide(); // hide old tips
-                settings.$li = settings.$li.siblings(':nth-child(' + i + ')'); // set to current tip
-                methods.set_next_tip();
-                methods.show();
-              }
+        do {
+          settings.directTipTargets[methods.getUniqueid(settings.$target)] = [settings.$li, settings.$target];
+          settings.$target.on('mouseenter', { id: settings.$target.id }, function(e) {
+          	if (settings.directTipMode)  {
+          		methods.hide();
+	            settings.$li = settings.directTipTargets[e.data.id][0];
+	            settings.$target = settings.directTipTargets[e.data.id][1];
+		          methods.set_next_tip();
+		          methods.show();
+	          }
           });
-          }
-        });
+
+          settings.$li = settings.$li.next();
+          methods.set_next_tip();
+          methods.set_target();
+        } while (settings.$li && settings.$li.index() > 0);
+
+        methods.set_li('init');
+      },
+
+      getUniqueid : function (el) {
+        if (!el.id) {
+          el.id = "id_" + settings.incrementingId++;
+          // Possibly add a check if this ID really is unique
+        }
+        return el.id;
       },
 
       setDirectTipMode : function (status) {
