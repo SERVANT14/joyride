@@ -7,7 +7,6 @@
  * Free to use under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  -->
-
   <head>
     <meta charset="utf-8" />
     <title>Joyride Demo</title>
@@ -28,6 +27,7 @@
         <a href="http://www.zurb.com/playground/jquery_joyride_feature_tour_plugin" id="start">View Docs + Playground for Joyride</a>
 
         <hr>
+        <a href="#" id="restartTour">Restart Help Tour</a>
       </div>
     </div>
 
@@ -134,18 +134,24 @@
     <script type="text/javascript" src="../jquery.joyride-2.1.js"></script>
     <script>
       $(window).load(function() {
-        $('#joyRideTipContent').joyride({
-          autoStart : true,
-          postStepCallback : function (index, tip) {
-          if (index == 2) {
-            $(this).joyride('set_li', false, 1);
-          }
-        },
-        modal:true,
-        expose: true
-        });
+				var tour = $('#joyRideTipContent');
+				if (tour.length) {
+					tour.joyride({
+		          autoStart : true,
+		          postStepCallback : function (index, tip) {
+		          if (index == 2) {
+		            $(this).joyride('set_li', false, 1);
+		          }
+		        },
+		        modal:true,
+		        expose: true
+	        });
+					$('#restartTour').on('click', function (e) {
+						e.preventDefault();
+						tour.joyride('restart');
+					});
+				}
       });
     </script>
-
   </body>
 </html>
