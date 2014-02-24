@@ -175,6 +175,7 @@
       },
 
       nextTip: function(){
+        setting.directTipMode = false;
         if (settings.$li.next().length < 1) {
           methods.end();
         } else if (settings.timer > 0) {
