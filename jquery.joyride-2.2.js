@@ -135,13 +135,13 @@
 
             settings.$document.on('click.joyride', '.joyride-direct-tip', function (e) {
               e.preventDefault();
-              settings.directTipMode = true;
+              methods.setDirectTipMode(true);
               methods.hide();
             });
 
             settings.$document.on('click.joyride', '.joyride-close-tip', function (e) {
               e.preventDefault();
-              settings.directTipMode = false;
+              methods.setDirectTipMode(false);
               methods.end();
             });
 
@@ -163,6 +163,9 @@
               }
             });
           } else {
+            if (settings.directTip) {
+              methods.prepareDirectTip();
+            }
             methods.restart();
           }
         });
@@ -378,6 +381,11 @@
           });
           }
         });
+      },
+
+      setDirectTipMode : function (status) {
+        settings.directTipMode = status;
+        $(settings.$body).toggleClass('joyride-direct-tip-active', status );
       },
 
       // detect phones with media queries if supported.
