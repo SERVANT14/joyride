@@ -99,8 +99,12 @@
     <br><br><br><br>
 
   </div>
-      <!-- Tip Content -->
+    <!-- Tip Content -->
     <ol id="joyRideTipContent">
+      <li data-text="Continue Joyride" data-directTip="Choose direct tip">
+				<h2>Welcome to the Joyride</h2>
+				<p>You can either go through the whole tour or choose an element you want to show the tip.</p>
+			</li>
       <li data-class="so-awesome" data-text="Next" class="custom">
         <h2>Stop #1</h2>
         <p>You can control all the details for you tour stop. Any valid HTML will work inside of Joyride.</p>
@@ -131,7 +135,7 @@
     <script type="text/javascript" src="../jquery-1.10.1.js"></script>
     <script type="text/javascript" src="../jquery.cookie.js"></script>
     <script type="text/javascript" src="../modernizr.mq.js"></script>
-    <script type="text/javascript" src="../jquery.joyride-2.1.js"></script>
+    <script type="text/javascript" src="../jquery.joyride-2.2.js"></script>
     <script>
       $(window).load(function() {
 				var tour = $('#joyRideTipContent');
@@ -144,7 +148,8 @@
 		          }
 		        },
 		        modal:true,
-		        expose: true
+		        expose: true,
+		        directTip: true
 	        });
 					$('#restartTour').on('click', function (e) {
 						e.preventDefault();
