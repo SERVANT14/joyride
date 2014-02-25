@@ -102,9 +102,9 @@
     <!-- Tip Content -->
     <ol id="joyRideTipContent">
       <li data-text="Continue Joyride" data-directTip="Choose direct tip">
-				<h2>Welcome to the Joyride</h2>
-				<p>You can either go through the whole tour or choose an element you want to show the tip.</p>
-			</li>
+        <h2>Welcome to the Joyride</h2>
+        <p>You can either go through the whole tour or choose an element you want to show the tip.</p>
+      </li>
       <li data-class="so-awesome" data-text="Next" class="custom">
         <h2>Stop #1</h2>
         <p>You can control all the details for you tour stop. Any valid HTML will work inside of Joyride.</p>
@@ -138,24 +138,24 @@
     <script type="text/javascript" src="../jquery.joyride-2.2.js"></script>
     <script>
       $(window).load(function() {
-				var tour = $('#joyRideTipContent');
-				if (tour.length) {
-					tour.joyride({
-		          autoStart : true,
-		          postStepCallback : function (index, tip) {
-		          if (index == 2) {
-		            $(this).joyride('set_li', false, 1);
-		          }
-		        },
-		        modal:true,
-		        expose: true,
-		        directTip: true
-	        });
-					$('#restartTour').on('click', function (e) {
-						e.preventDefault();
-						tour.joyride('restart');
-					});
-				}
+        var tour = $('#joyRideTipContent');
+        if (tour.length) {
+          tour.joyride({
+              autoStart : true,
+              postStepCallback : function (index, tip) {
+              if (index == 2) {
+                $(this).joyride('set_li', false, 1);
+              }
+            },
+            modal:true,
+            expose: true,
+            directTip: true
+          });
+          $('#restartTour').on('click', function (e) {
+            e.preventDefault();
+            tour.joyride('restart');
+          });
+        }
       });
     </script>
   </body>
