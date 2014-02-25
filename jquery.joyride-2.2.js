@@ -278,7 +278,7 @@
           // don't go to the next li if the tour was paused
           if (settings.paused) {
             settings.paused = false;
-          } else {
+          } else if (init !== 'directTip' ) {
             methods.set_li(init);
           }
 
@@ -366,31 +366,22 @@
 
       prepareDirectTip : function () {
         do {
-          settings.directTipTargets[methods.getUniqueid(settings.$target)] = [settings.$li, settings.$target];
-          settings.$target.on('mouseenter', { id: settings.$target.id }, function(e) {
-          	if (settings.directTipMode)  {
-          		methods.hide();
-	            settings.$li = settings.directTipTargets[e.data.id][0];
-	            settings.$target = settings.directTipTargets[e.data.id][1];
-		          methods.set_next_tip();
-		          methods.show();
-	          }
+          methods.set_target();
+
+          settings.$target.on('mouseenter', { target: settings.$target, li: settings.$li }, function(e) {
+            if (settings.directTipMode && e.data.target.selector != 'body') {
+              methods.hide();
+              settings.$target = e.data.target;
+              settings.$li = e.data.li;
+              methods.set_next_tip();
+              methods.show('directTip');
+            }
           });
 
           settings.$li = settings.$li.next();
-          methods.set_next_tip();
-          methods.set_target();
         } while (settings.$li && settings.$li.index() > 0);
 
-        methods.set_li('init');
-      },
-
-      getUniqueid : function (el) {
-        if (!el.id) {
-          el.id = "id_" + settings.incrementingId++;
-          // Possibly add a check if this ID really is unique
-        }
-        return el.id;
+        methods.set_li('init'); // reset tour after preparation
       },
 
       setDirectTipMode : function (status) {
