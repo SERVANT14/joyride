@@ -129,7 +129,7 @@
 
             settings.$document.on('click.joyride', '.joyride-close-tip', function (e) {
               e.preventDefault();
-              methods.end();
+              methods.end(true /* isAborted */);
             });
 
             settings.$window.bind('resize.joyride', function (e) {
@@ -158,7 +158,7 @@
 
       // call this method when you want to resume the tour
       resume : function () {
-        methods.set_li();
+        settings.paused = false;
         methods.show();
       },
 
@@ -240,15 +240,13 @@
         var opts = {}, ii, opts_arr = [], opts_len = 0, p,
             $timer = null;
 
-        // are we paused?
-        if (settings.$li === undefined || ($.inArray(settings.$li.index(), settings.pauseAfter) === -1)) {
 
-          // don't go to the next li if the tour was paused
           if (settings.paused) {
-            settings.paused = false;
-          } else {
-            methods.set_li(init);
+            return;
           }
+
+          methods.set_li(init);
+          
 
           settings.attempts = 0;
 
@@ -343,11 +341,6 @@
             methods.end();
 
           }
-        } else {
-
-          settings.paused = true;
-
-        }
 
       },
 
@@ -378,6 +371,11 @@
         if (settings.$current_tip) {
           settings.$current_tip.hide();
           settings.postStepCallback(settings.$li.index(), settings.$current_tip);
+        }
+
+        // do we need to pause?
+        if (!(settings.$li === undefined || ($.inArray(settings.$li.index(), settings.pauseAfter) === -1))) {
+          settings.paused = true;
         }
       },
 
@@ -830,7 +828,14 @@
         }
       },
 
-      end : function () {
+      end : function (isAborted) {
+        isAborted = isAborted || false;
+
+        // Unbind resize events.
+        if (isAborted) {
+          settings.$window.unbind('resize.joyride');
+        }
+
         if (settings.cookieMonster) {
           $.cookie(settings.cookieName, 'ridden', { expires: 365, domain: settings.cookieDomain, path: settings.cookiePath });
         }
@@ -849,8 +854,8 @@
           settings.$current_tip.hide();
         }
         if (settings.$li) {
-          settings.postStepCallback(settings.$li.index(), settings.$current_tip);
-          settings.postRideCallback(settings.$li.index(), settings.$current_tip);
+          settings.postStepCallback(settings.$li.index(), settings.$current_tip, isAborted);
+          settings.postRideCallback(settings.$li.index(), settings.$current_tip, isAborted);
         }
         $('.joyride-modal-bg').hide();
       },
@@ -892,7 +897,7 @@
               // Escape key.
               event.keyCode === 27 ) {
             event.preventDefault();
-            methods.end();
+            methods.end(true /* isAborted */);
             return;
           }
 
